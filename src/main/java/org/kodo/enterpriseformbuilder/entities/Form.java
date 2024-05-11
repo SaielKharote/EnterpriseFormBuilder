@@ -1,10 +1,18 @@
 package org.kodo.enterpriseformbuilder.entities;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.annotation.processing.Generated;
+import java.util.List;
 
-
+@NoArgsConstructor
+@AllArgsConstructor
+@Setter
+@Getter
 @Entity
 @Table(name = "forms")
 public class Form {
