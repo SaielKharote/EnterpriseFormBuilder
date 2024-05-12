@@ -1,10 +1,8 @@
 package org.kodo.enterpriseformbuilder.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,21 +19,22 @@ public class FormField {
     private String label;
 
     @Column(nullable = false)
-    private Long maxLength;
+    private DataType dataType;
 
     @Column(nullable = false)
-    private Long minLength;
+    private Boolean isRequired;
 
-    @Column(nullable = false)
-    private String type;
+    @Column(nullable = true)
+    private Integer minValue;
 
-    @Column(nullable = false)
-    private Boolean required;
+    @Column(nullable = true)
+    private Long maxValue = 255L;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Integer decimal_places;
 
     @ManyToOne
     @JoinColumn(name = "form_id", nullable = false)
+    @JsonIgnore
     private Form form;
 }

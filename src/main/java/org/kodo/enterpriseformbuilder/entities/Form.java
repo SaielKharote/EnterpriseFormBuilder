@@ -20,11 +20,17 @@ public class Form {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    public Form(String title, String submitButtonLabel, List<FormField> fields) {
+        this.title = title;
+        this.submitButtonLabel = submitButtonLabel;
+        this.fields = fields;
+    }
+
     @Column(nullable = false)
     private String title;
 
     @Column(name = "submit_button_label", nullable = false)
-    private String submitButtonLabel;
+    private String submitButtonLabel = "Submit";
 
     @OneToMany(mappedBy = "form", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<FormField> fields;

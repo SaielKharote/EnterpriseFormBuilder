@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class FormFieldService {
-    private FormFieldRepository formFieldRepository;
+    private final FormFieldRepository formFieldRepository;
     public FormFieldService(FormFieldRepository formFieldRepository) {
         this.formFieldRepository = formFieldRepository;
     }
