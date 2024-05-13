@@ -25,13 +25,13 @@ public class FormField {
     private Boolean isRequired;
 
     @Column(nullable = true)
-    private Integer minValue;
+    private Long minValue;
 
     @Column(nullable = true)
-    private Long maxValue = 255L;
+    private Long maxValue = Long.MAX_VALUE;
 
     @Column(nullable = true)
-    private Integer decimal_places;
+    private Integer decimalPlaces;
 
     @ManyToOne
     @JoinColumn(name = "form_id", nullable = false)
