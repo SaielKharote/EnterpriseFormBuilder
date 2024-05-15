@@ -4,7 +4,6 @@ import org.kodo.enterpriseformbuilder.dtos.CreateFormFieldRequestDTO;
 import org.kodo.enterpriseformbuilder.entities.DataType;
 import org.kodo.enterpriseformbuilder.entities.Form;
 import org.kodo.enterpriseformbuilder.entities.FormField;
-import org.kodo.enterpriseformbuilder.exceptions.FormNotFoundException;
 import org.kodo.enterpriseformbuilder.exceptions.InvalidArgsException;
 import org.kodo.enterpriseformbuilder.repositories.FormFieldRepository;
 import org.springframework.stereotype.Service;
@@ -15,10 +14,6 @@ public class FormFieldService {
     private final FormFieldRepository formFieldRepository;
     public FormFieldService(FormFieldRepository formFieldRepository) {
         this.formFieldRepository = formFieldRepository;
-    }
-
-    public FormField getFormFieldByLabel(String label) {
-        return formFieldRepository.findByLabel(label);
     }
 
     public FormField saveFormField(CreateFormFieldRequestDTO createFormFieldDTO, Form form) {
@@ -35,16 +30,14 @@ public class FormFieldService {
         return formFieldRepository.save(formField);
     }
 
-    public void deleteFormField(FormField formField) {
-        formFieldRepository.delete(formField);
+
+    public FormField getFormFieldByLabel(String label) {
+        return formFieldRepository.findByLabel(label);
     }
 
     public FormField getFormFieldById(Long id) {
         return formFieldRepository.findById(id).orElse(null);
     }
 
-    public void removeFormField(Form form, FormField formField) {
-        form.getFields().remove(formField);
-    }
 
 }

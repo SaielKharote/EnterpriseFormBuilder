@@ -6,6 +6,6 @@ public class FormNotFoundException extends RuntimeException {
     }
 
     public FormNotFoundException(String title) {
-        super("Form not found with id: " + title);
+        super("Form not found with title: " + title);
     }
 }

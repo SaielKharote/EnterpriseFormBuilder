@@ -1,7 +1,6 @@
 package org.kodo.enterpriseformbuilder.controllers;
 
 import org.kodo.enterpriseformbuilder.dtos.CreateFormRequestDTO;
-import org.kodo.enterpriseformbuilder.dtos.FormDTO;
 import org.kodo.enterpriseformbuilder.entities.Form;
 import org.kodo.enterpriseformbuilder.entities.FormField;
 import org.kodo.enterpriseformbuilder.exceptions.FormFieldNotFoundException;
@@ -32,13 +31,13 @@ public class FormController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<FormDTO> createForm(@RequestBody CreateFormRequestDTO createFormRequestDTO) {
-        FormDTO formDTO = formService.createForm(createFormRequestDTO);
-        return new ResponseEntity<>(formDTO, HttpStatus.CREATED);
+    public ResponseEntity<Form> createForm(@RequestBody CreateFormRequestDTO createFormRequestDTO) {
+        Form form = formService.createForm(createFormRequestDTO);
+        return new ResponseEntity<>(form, HttpStatus.CREATED);
     }
 
     @PostMapping("/{formId}/fields/{fieldId}")
-    public ResponseEntity<FormDTO> addFormFields(@PathVariable Long formId, @PathVariable Long fieldId) throws Exception {
+    public ResponseEntity<Form> addFormFields(@PathVariable Long formId, @PathVariable Long fieldId) throws Exception {
         Form form = formService.getFormById(formId);
         FormField formField = formFieldService.getFormFieldById(fieldId);
         if (form == null) {
@@ -49,26 +48,24 @@ public class FormController {
         }
         form.getFields().add(formField);
         formService.saveForm(form);
-        return ResponseEntity.ok(new FormDTO(form.getTitle(), form.getFields(), form.getSubmitButtonLabel()));
+        return ResponseEntity.ok(form);
     }
 
     @GetMapping("id/{formId}")
-    public ResponseEntity<FormDTO> getFormById(@PathVariable Long formId) {
+    public ResponseEntity<Form> getFormById(@PathVariable Long formId) {
         try {
             Form form = formService.getFormById(formId);
-            FormDTO formDTO = new FormDTO(form.getTitle(), form.getFields(), form.getSubmitButtonLabel());
-            return ResponseEntity.ok(formDTO);
+            return ResponseEntity.ok(form);
         } catch (Exception e) {
             throw new FormNotFoundException(formId);
         }
     }
 
     @GetMapping("title/{title}")
-    public ResponseEntity<FormDTO> getFormByTitle(@PathVariable String title) {
+    public ResponseEntity<Form> getFormByTitle(@PathVariable String title) {
         try {
             Form form = formService.getFormByTitle(title);
-            FormDTO formDTO = new FormDTO(form.getTitle(), form.getFields(), form.getSubmitButtonLabel());
-            return ResponseEntity.ok(formDTO);
+            return ResponseEntity.ok(form);
         } catch (Exception e) {
             throw new FormNotFoundException(title);
         }
