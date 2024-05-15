@@ -1,13 +1,13 @@
 package org.kodo.enterpriseformbuilder.controllers;
 
-import org.kodo.enterpriseformbuilder.entities.DataType;
+import org.kodo.enterpriseformbuilder.dtos.CreateFormFieldRequestDTO;
+import org.kodo.enterpriseformbuilder.dtos.FormFieldDTO;
 import org.kodo.enterpriseformbuilder.entities.Form;
 import org.kodo.enterpriseformbuilder.entities.FormField;
-import org.kodo.enterpriseformbuilder.exceptions.FormException;
+import org.kodo.enterpriseformbuilder.exceptions.FormFieldNotFoundException;
 import org.kodo.enterpriseformbuilder.exceptions.FormNotFoundException;
 import org.kodo.enterpriseformbuilder.services.FormFieldService;
 import org.kodo.enterpriseformbuilder.services.FormService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,36 +23,94 @@ public class FormFieldController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<FormField> createFormField(@RequestParam Long formId, @RequestBody FormField formField) throws Exception {
-
+    public ResponseEntity<FormFieldDTO> createFormField(@RequestParam Long formId, @RequestBody CreateFormFieldRequestDTO createFormFieldRequestDTO) {
         Form form = formService.getFormById(formId);
         if (form == null) {
-            throw new FormNotFoundException("Form not found");
+            throw new FormNotFoundException(formId);
         }
-        else {
-            formField.setForm(form);
-            if (formField.getDataType() == DataType.DECIMAL && formField.getDecimalPlaces() == null) {
-                throw new IllegalArgumentException("Decimal places must be provided for decimal data type");
-            }
-            else {
-                return ResponseEntity.ok(formFieldService.saveFormField(formField));
-            }
+        try {
+            FormField formField = formFieldService.saveFormField(createFormFieldRequestDTO, form);
+            FormFieldDTO formFieldDTO = new FormFieldDTO(formField.getLabel(),
+                    formField.getDataType(),
+                    formField.getIsRequired(),
+                    formField.getMinValue(),
+                    formField.getMaxValue(),
+                    formField.getDecimalPlaces(),
+                    formField.getForm());
+            return ResponseEntity.ok(formFieldDTO);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid data type");
         }
     }
 
-    @PostMapping("/delete")
-    public ResponseEntity<FormField> deleteFormField(FormField formField) {
+    @PostMapping("/remove/{formId}/{fieldId}")
+    public ResponseEntity<FormFieldDTO> removeFormField(@PathVariable Long formId, @PathVariable Long fieldId) throws FormFieldNotFoundException {
+            FormField formField = formFieldService.getFormFieldById(fieldId);
+            Form form = formService.getFormById(formId);
+            if (formField == null) {
+                throw new FormFieldNotFoundException(fieldId);
+            }
+            if (form == null) {
+                throw new FormNotFoundException(formId);
+            }
+            formFieldService.removeFormField(form, formField);
+            FormFieldDTO formFieldDTO = new FormFieldDTO(formField.getLabel(),
+                    formField.getDataType(),
+                    formField.getIsRequired(),
+                    formField.getMinValue(),
+                    formField.getMaxValue(),
+                    formField.getDecimalPlaces(),
+                    formField.getForm());
+            return ResponseEntity.ok(formFieldDTO);
+    }
+
+    @PostMapping("/delete/{id}")
+    public ResponseEntity<FormFieldDTO> deleteFormField(@PathVariable Long id) throws FormFieldNotFoundException {
+        FormField formField = formFieldService.getFormFieldById(id);
+        if (formField == null) {
+            throw new FormFieldNotFoundException(id);
+        }
         formFieldService.deleteFormField(formField);
-        return ResponseEntity.ok(formField);
+        FormFieldDTO formFieldDTO = new FormFieldDTO(formField.getLabel(),
+                formField.getDataType(),
+                formField.getIsRequired(),
+                formField.getMinValue(),
+                formField.getMaxValue(),
+                formField.getDecimalPlaces(),
+                formField.getForm());
+        return ResponseEntity.ok(formFieldDTO);
     }
 
-    @GetMapping("{id}/id")
-    public ResponseEntity<FormField> getFormFieldById(@PathVariable Long id) {
-        return ResponseEntity.ok(formFieldService.getFormFieldById(id));
+    @GetMapping("id/{id}")
+    public ResponseEntity<FormFieldDTO> getFormFieldById(@PathVariable Long id) throws FormFieldNotFoundException {
+        FormField formField = formFieldService.getFormFieldById(id);
+        if (formField == null) {
+            throw new FormFieldNotFoundException(id);
+        }
+        FormFieldDTO formFieldDTO = new FormFieldDTO(formField.getLabel(),
+                formField.getDataType(),
+                formField.getIsRequired(),
+                formField.getMinValue(),
+                formField.getMaxValue(),
+                formField.getDecimalPlaces(),
+                formField.getForm());
+        return ResponseEntity.ok(formFieldDTO);
+
     }
 
-    @GetMapping("{label}/label")
-    public ResponseEntity<FormField> getFormFieldByLabel(@PathVariable String label) {
-        return ResponseEntity.ok(formFieldService.getFormFieldByLabel(label));
+    @GetMapping("label/{label}")
+    public ResponseEntity<FormFieldDTO> getFormFieldByLabel(@PathVariable String label) throws FormFieldNotFoundException {
+        FormField formField = formFieldService.getFormFieldByLabel(label);
+        if (formField == null) {
+            throw new FormFieldNotFoundException(label);
+        }
+        FormFieldDTO formFieldDTO = new FormFieldDTO(formField.getLabel(),
+                formField.getDataType(),
+                formField.getIsRequired(),
+                formField.getMinValue(),
+                formField.getMaxValue(),
+                formField.getDecimalPlaces(),
+                formField.getForm());
+        return ResponseEntity.ok(formFieldDTO);
     }
 }

@@ -1,7 +1,10 @@
 package org.kodo.enterpriseformbuilder.services;
 
+import org.kodo.enterpriseformbuilder.dtos.CreateFormRequestDTO;
+import org.kodo.enterpriseformbuilder.dtos.FormDTO;
 import org.kodo.enterpriseformbuilder.entities.Form;
-import org.kodo.enterpriseformbuilder.entities.FormField;
+import org.kodo.enterpriseformbuilder.exceptions.FormNotFoundException;
+import org.kodo.enterpriseformbuilder.exceptions.InvalidArgsException;
 import org.kodo.enterpriseformbuilder.repositories.FormRepository;
 import org.springframework.stereotype.Service;
 
@@ -16,11 +19,11 @@ public class FormService {
         this.formRepository = formRepository;
     }
 
-    public Form getFormByTitle(String title) throws Exception {
+    public Form getFormByTitle(String title) {
         if (formRepository.findByTitle(title) != null) {
             return formRepository.findByTitle(title);
         } else {
-            throw new Exception("Form not found");
+            throw new FormNotFoundException(title);
         }
     }
 
@@ -32,13 +35,25 @@ public class FormService {
         return formRepository.count();
     }
 
-    public Form createForm(String title, List<FormField> fields, String getSubmitLabel) {
-        Form form = new Form(title, getSubmitLabel, fields);
-        return formRepository.save(form);
+    public FormDTO createForm(CreateFormRequestDTO createFormRequestDTO) {
+        try {
+            Form form = new Form(createFormRequestDTO.getTitle(),
+                    createFormRequestDTO.getSubmitButtonLabel(),
+                    createFormRequestDTO.getFields());
+            formRepository.save(form);
+            return new FormDTO(form.getTitle(), form.getFields(), form.getSubmitButtonLabel());
+        } catch (Exception e) {
+            throw new InvalidArgsException();
+        }
+
     }
 
-    public Form getFormById(Long id) throws Exception {
-        return formRepository.findById(id).orElseThrow(() -> new Exception("Form not found"));
+    public Form getFormById(Long formId) {
+        if (formRepository.findById(formId).isPresent()) {
+            return formRepository.findById(formId).get();
+        } else {
+            throw new FormNotFoundException(formId);
+        }
     }
 
     public void saveForm(Form form) {
@@ -48,4 +63,5 @@ public class FormService {
     public List<Form> getAllForms() {
         return formRepository.findAll();
     }
+
 }

@@ -11,7 +11,7 @@ import java.util.List;
 @Setter
 @Data
 public class CreateFormRequestDTO {
-    public String submitButtonLabel;
+    public String submitButtonLabel="Submit";
     private String title;
     private List<FormField> fields;
 }

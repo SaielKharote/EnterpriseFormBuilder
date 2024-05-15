@@ -30,7 +30,7 @@ public class Form {
     private String title;
 
     @Column(name = "submit_button_label", nullable = false)
-    private String submitButtonLabel = "Submit";
+    private String submitButtonLabel;
 
     @OneToMany(mappedBy = "form", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<FormField> fields;

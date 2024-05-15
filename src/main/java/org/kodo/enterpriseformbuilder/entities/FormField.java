@@ -37,4 +37,14 @@ public class FormField {
     @JoinColumn(name = "form_id", nullable = false)
     @JsonIgnore
     private Form form;
+
+    public FormField(String label, DataType dataType, Boolean isRequired, Long minValue, Long maxValue, Integer decimalPlaces, Form form) {
+        this.label = label;
+        this.dataType = dataType;
+        this.isRequired = isRequired;
+        this.minValue = minValue;
+        this.maxValue = maxValue;
+        this.decimalPlaces = decimalPlaces;
+        this.form = form;
+    }
 }
